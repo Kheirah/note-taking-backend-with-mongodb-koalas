@@ -1,9 +1,17 @@
 require("dotenv").config();
 const express = require("express");
+const connect = require("./lib/connect");
+const Note = require("./models/notes");
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.get("/", (req, res) => res.type("html").send(html));
+
+app.get("/notes", async (req, res) => {
+  await connect();
+  const notes = await Note.find();
+  res.json(notes);
+});
 
 const server = app.listen(port, () =>
   console.log(`Express app listening on port ${port}!`)
@@ -57,7 +65,7 @@ const html = `
   </head>
   <body>
     <section>
-      Hello from Render!
+      Welcome to our note app!
     </section>
   </body>
 </html>
