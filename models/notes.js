@@ -2,10 +2,15 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-const notesSchema = new Schema({
-  content: { type: String, required: true },
-  category: { type: String, required: true },
-});
+const notesSchema = new Schema(
+  {
+    content: { type: String, required: true },
+    category: { type: String, required: true },
+  },
+  {
+    versionKey: false,
+  }
+);
 
 const Note = mongoose.models.Note || mongoose.model("Note", notesSchema);
 
