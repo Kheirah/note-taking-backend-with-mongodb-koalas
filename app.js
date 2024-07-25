@@ -44,7 +44,11 @@ app.get("/:user/notes", async (req, res) => {
 
   const foundUser = await User.findOne({ name: user });
 
-  const notes = await Note.find({ userId: foundUser._id }).populate("userId");
+  const notes = await Note.find({ userId: foundUser._id }).populate(
+    "userId",
+    "-_id"
+  );
+
   res.json(notes);
 });
 
