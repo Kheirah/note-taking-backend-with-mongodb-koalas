@@ -2,14 +2,60 @@ require("dotenv").config();
 const express = require("express");
 const connect = require("./lib/connect");
 const Note = require("./models/notes");
+const User = require("./models/users");
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(express.json());
+
 app.get("/", (req, res) => res.type("html").send(html));
+
+app.post("/users", async (req, res) => {
+  await connect();
+  const { name } = req.body;
+  const created = await User.create({ name });
+
+  if (!created?._id) {
+    return res.json({ message: "Sorry🥺, user could not be created." });
+  }
+
+  res.json({ message: `User ${name} created successfully.` });
+});
+
+app.post("/:user/notes", async (req, res) => {
+  await connect();
+  const { user } = req.params;
+  const { content, category } = req.body;
+
+  const foundUser = await User.findOne({ name: user });
+
+  const created = await Note.create({
+    content,
+    category,
+    userId: foundUser._id,
+  });
+
+  res.json({ message: `Note created successfully.` });
+});
+
+app.get("/:user/notes", async (req, res) => {
+  await connect();
+  const { user } = req.params;
+
+  const foundUser = await User.findOne({ name: user });
+
+  const notes = await Note.find({ userId: foundUser._id }).populate("userId");
+  res.json(notes);
+});
 
 app.get("/notes", async (req, res) => {
   await connect();
-  const notes = await Note.find();
+  const notes = await Note.find({ name: "yalla" });
+
+  if (!notes.length) {
+    return res.json({ message: "Sorry🥺, could not find any notes." });
+  }
+
   res.json(notes);
 });
 
